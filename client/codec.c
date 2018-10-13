@@ -129,7 +129,7 @@ int encode_packet(int msgType, void *msg, unsigned char **dst)
 		header = (PACKET_HEADER *)calloc(1,sizeof(PACKET_HEADER)); // make header
 		header->msgType = MT_IMG_SEND;
 		header->length = msgLen;
-		headLen = encode_PacketHeader(header,&headBuf); //encoding header and het header length
+		headLen = encode_PacketHeader(header,&headBuf); //encoding header and get header length
 		break;
 	case MT_IMG_ACK:
 		msgLen = encode_ImgAck((IMG_ACK *)msg,&msgBuf); //msg enconding and get msg length

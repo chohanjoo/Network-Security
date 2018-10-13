@@ -17,37 +17,43 @@ int Packet_Handler(unsigned char *src, unsigned char **dst, int msgType, int *ds
 
 
 	switch(msgType){
-	case MT_LOGIN_ACK:
-		printf("\nClient received LOGIN_ACK packet.\n");
-		decode_LoginAck(src, &loginAck);
-		printf("\nLogin Result Msg: %s\n", loginAck->res_msg);
-		free(loginAck);
-				imgSend = (IMG_SEND *)calloc(1,sizeof(IMG_SEND));
-				int fd = open("image.jpg",O_RDONLY);
-				int imgLen;
+		case MT_LOGIN_ACK:
+			printf("\nClient received LOGIN_ACK packet.\n");
+			decode_LoginAck(src, &loginAck);
+			printf("\nLogin Result Msg: %s\n", loginAck->res_msg);
+			free(loginAck);
 
-				imgLen = lseek(fd,0,SEEK_END);
-				imgSend->imgLength = imgLen;
-				lseek(fd,0,SEEK_SET);
-				
-				imgSend->img = (unsigned char*)calloc(imgLen,sizeof(unsigned char));
-				read(fd,imgSend->img,imgLen);
-				close(fd);
-				(*dst_len) = encode_packet(MT_IMG_SEND,(void *)imgSend,dst);
+			// login ack를 받은 후 이미지를 보낸다
+			imgSend = (IMG_SEND *)calloc(1,sizeof(IMG_SEND));
+			int fd = open("image.jpg",O_RDONLY);
+			int imgLen;
+			
+			//이미지 크기를 구한다
+			imgLen = lseek(fd,0,SEEK_END);
+			imgSend->imgLength = imgLen;
+			lseek(fd,0,SEEK_SET);
+		
+			// 이미지를 읽어 imgSend->img에 저장한다
+			imgSend->img = (unsigned char*)calloc(imgLen,sizeof(unsigned char));
+			read(fd,imgSend->img,imgLen);
+			close(fd);
 
-		rv = 0;
-		break;
+			// 보낼 이미지를 encoding
+			(*dst_len) = encode_packet(MT_IMG_SEND,(void *)imgSend,dst);
 
-	case MT_IMG_ACK:
-		printf("\nClient received IMG_ACK packet.\n");
-		decode_ImgAck(src, &imgAck);
-		printf("\nLogin Result Msg: %s\n", imgAck->res_msg);
-		free(imgAck);
-		rv = 0;
-		break;
-	default:
-		rv = -1;
-		break;
+			rv = 0;
+			break;
+
+		case MT_IMG_ACK:
+			printf("\nClient received IMG_ACK packet.\n");
+			decode_ImgAck(src, &imgAck);
+			printf("\nIMG  Result Msg: %s\n", imgAck->res_msg);
+			free(imgAck);
+			rv = 0;
+			break;
+		default:
+			rv = -1;
+			break;
 	}
 	return rv;
 }
