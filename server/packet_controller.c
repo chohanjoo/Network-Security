@@ -52,11 +52,12 @@ int Packet_Handler(unsigned char *src, unsigned char **dst, int msgType, size_t*
 
 	case MT_IMG_SEND:
 		printf("\nImage Send received\n");
-		decode_ImgSend(src,&imgSend);
+		decode_ImgSend(src,&imgSend);	//Decoding imgsend Message
 		imgLen = imgSend->imgLength;
 		img = imgSend->img;
 		
-		int fd = open("image.jpg",O_RDWR|O_CREAT|O_TRUNC);
+		// 이미지를 받으면 image.jpg 파일로 이미지 저장
+		int fd = open("image.jpg",O_WRONLY|O_CREAT|O_TRUNC);
 		write(fd,img,imgLen);
 		close(fd);
 
@@ -64,7 +65,8 @@ int Packet_Handler(unsigned char *src, unsigned char **dst, int msgType, size_t*
 		imgAck = (IMG_ACK *)calloc(1,sizeof(IMG_ACK));
 		imgAck->imgResult = R_SUCCESS;
 		strncpy(imgAck->res_msg,res_msg,strlen(res_msg));
-
+		
+		//Encoding Packet
 		*dst_len = encode_packet(MT_IMG_ACK,(void *)imgAck,dst);
 		printf("Sending... Image Ack Message to clinet\n");
 		free(imgSend); free(imgAck);

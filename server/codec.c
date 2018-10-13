@@ -125,18 +125,18 @@ int encode_packet(int msgType, void *msg, unsigned char **dst)
 		break;
 
 	case MT_IMG_SEND:
-		msgLen = encode_ImgSend((IMG_SEND*)msg,&msgBuf);
-		header = (PACKET_HEADER *)calloc(1,sizeof(PACKET_HEADER));
+		msgLen = encode_ImgSend((IMG_SEND*)msg,&msgBuf); // msg encoding and get msg length
+		header = (PACKET_HEADER *)calloc(1,sizeof(PACKET_HEADER)); // make header
 		header->msgType = MT_IMG_SEND;
 		header->length = msgLen;
-		headLen = encode_PacketHeader(header,&headBuf);
+		headLen = encode_PacketHeader(header,&headBuf); // encoding header and get header length
 		break;
 	case MT_IMG_ACK:
-		msgLen = encode_ImgAck((IMG_ACK *)msg,&msgBuf);
-		header = (PACKET_HEADER *)calloc(1,sizeof(PACKET_HEADER));
+		msgLen = encode_ImgAck((IMG_ACK *)msg,&msgBuf); // msg encoding and get msg length
+		header = (PACKET_HEADER *)calloc(1,sizeof(PACKET_HEADER)); // make header
 		header->msgType = MT_IMG_ACK;
 		header->length = msgLen;
-		headLen = encode_PacketHeader(header,&headBuf);
+		headLen = encode_PacketHeader(header,&headBuf); // encoding header and header length
 		break;
 	}
 
@@ -154,7 +154,7 @@ int encode_packet(int msgType, void *msg, unsigned char **dst)
 	return (headLen + msgLen);
 }
 
-
+// IMG_SEND 형태로 decoding
 int decode_ImgSend(unsigned char *src, IMG_SEND **dst)
 {
 	unsigned char *pt;
@@ -173,7 +173,7 @@ int decode_ImgSend(unsigned char *src, IMG_SEND **dst)
 	return sizeof(IMG_SEND);
 }
 
-
+// 이미지 ACK 파일 encoding
 int encode_ImgAck(IMG_ACK *src, unsigned char **dst)
 {
 	unsigned char *pt;
@@ -191,7 +191,7 @@ int encode_ImgAck(IMG_ACK *src, unsigned char **dst)
 	return sizeof(IMG_ACK);
 }
 
-
+// 이미지 전송 packet을 char 배열로 encoding
 int encode_ImgSend(IMG_SEND *src, unsigned char **dst)
 {
 	unsigned char *pt;
@@ -209,7 +209,7 @@ int encode_ImgSend(IMG_SEND *src, unsigned char **dst)
 	return src->imgLength+sizeof(int);
 }
 
-
+//이미지 ACK 파일을 decoding
 int decode_ImgAck(unsigned char *src, IMG_ACK **dst)
 {
 	unsigned char *pt;
